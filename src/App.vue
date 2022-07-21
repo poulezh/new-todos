@@ -1,8 +1,14 @@
 <template>
 	<div class="app">
 		<h2>Page of Posts</h2>
+		<div class="app__btns">
+			<MyButton class="create__btn" @click="showDialog">Create Posts</MyButton>
+			<MySelect 
+				v-model="selectedSort"
+				:options="sorpOptions"
+			></MySelect>
+		</div>
 		<!-- <input type="text" v-model.trim="modificatorValue"> -->
-		<MyButton class="create__btn" @click="showDialog">Create Posts</MyButton>
 		<MyModalDialog v-model:show="dialogVisible">
 			<PostForm @create="createPost"></PostForm>
 		</MyModalDialog>
@@ -16,19 +22,26 @@ import PostForm from "@/components/PostForm.vue";
 import PostList from "@/components/PostList.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import axios from "axios";
+import MySelect from "./components/UI/MySelect.vue";
 export default {
 	components: {
-		PostForm,
-		PostList,
-		MyButton,
-		MyButton,
-	},
+    PostForm,
+    PostList,
+    MyButton,
+    MyButton,
+    MySelect
+},
 	data() {
 		return {
 			posts: [],
 			dialogVisible: false,
 			modificatorValue: "",
 			isPostLoading: false,
+			selectedSort: '',
+			sorpOptions: [
+				{value: 'title', name: 'name'},
+				{value: 'body', name: 'description'},
+			]
 		};
 	},
 	methods: {
@@ -55,6 +68,7 @@ export default {
 				this.isPostLoading = false;
 			}
 		},
+		
 	},
 	mounted() {
 		this.fetchPosts();
@@ -83,6 +97,7 @@ h2 {
 .create__btn {
 	margin: 12px;
 	text-align: right;
+	order: 1;
 }
 
 @keyframes spin {
@@ -111,5 +126,9 @@ h2 {
 	animation-timing-function: linear;
 	z-index: 2;
 	position: absolute;
+}
+.app__btns{
+	display: flex;
+	justify-content: space-between;
 }
 </style>
