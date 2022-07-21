@@ -1,37 +1,63 @@
 <template>
 	<div class="app">
-		<PostForm @create="createPost"></PostForm>
-		<PostList 
-			:posts="posts"
-			@remove="removePost"
-		></PostList>
+		<h2>Page of Posts</h2>
+		<!-- <input type="text" v-model.trim="modificatorValue"> -->
+		<MyButton class="create__btn" @click="showDialog">Create Posts</MyButton>
+		<MyModalDialog v-model:show="dialogVisible">
+			<PostForm @create="createPost"></PostForm>
+		</MyModalDialog>
+		<PostList :posts="posts" @remove="removePost" v-if="!isPostLoading"></PostList>
+		<div v-else class="loading"></div>
 	</div>
 </template>
 
 <script>
-import { remove } from '@vue/shared';
-import PostForm from "./components/PostForm.vue";
-import PostList from "./components/PostList.vue";
+import PostForm from "@/components/PostForm.vue";
+import PostList from "@/components/PostList.vue";
+import MyButton from "@/components/UI/MyButton.vue";
+import axios from "axios";
 export default {
 	components: {
-    PostForm,
-    PostList
-},
+		PostForm,
+		PostList,
+		MyButton,
+		MyButton,
+	},
 	data() {
 		return {
-			posts: [
-				{ id: 1, title: 'Title1', body: 'desc1' },
-				{ id: 2, title: 'Title2', body: 'desc2' },
-			],
+			posts: [],
+			dialogVisible: false,
+			modificatorValue: "",
+			isPostLoading: false,
 		};
 	},
 	methods: {
-		createPost(post){
-			this.posts.push(post)
+		createPost(post) {
+			this.posts.push(post);
+			this.dialogVisible = false;
 		},
-		removePost(post){
-			this.posts = this.posts.filter(p => p.id !== post.id)
-		}
+		removePost(post) {
+			this.posts = this.posts.filter((p) => p.id !== post.id);
+		},
+		showDialog() {
+			this.dialogVisible = true;
+		},
+		async fetchPosts() {
+			try {
+				this.isPostLoading = true;
+				const response = await axios.get(
+					"https://jsonplaceholder.typicode.com/posts?_limit=10"
+				);
+				this.posts = response.data;
+			} catch (e) {
+				alert("error");
+			} finally {
+				this.isPostLoading = false;
+			}
+		},
+	},
+	mounted() {
+		this.fetchPosts();
 	},
 };
 </script>
@@ -43,10 +69,47 @@ export default {
 	box-sizing: border-box;
 }
 
+h2 {
+	text-align: center;
+}
+
 .app {
 	max-width: 780px;
 	width: 100%;
 	margin: 0 auto;
+	text-align: center;
 }
 
+.create__btn {
+	margin: 12px;
+	text-align: right;
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.loading:after {
+	content: "";
+	width: 30px;
+	height: 30px;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	margin: auto;
+	background: url("@/assets/img/loading_red.png") no-repeat center;
+	animation-name: spin;
+	animation-duration: 600ms;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+	z-index: 2;
+	position: absolute;
+}
 </style>

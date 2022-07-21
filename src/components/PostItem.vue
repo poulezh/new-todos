@@ -19,6 +19,9 @@ export default {
             required: true
         }
     },
+    methods:{
+
+    }
 }
 </script>
 
@@ -31,6 +34,10 @@ export default {
   padding: 15px;
   border: 2px solid forestgreen;
   margin: 16px;
+  text-align: left;
+}
+.post div div{
+  margin-bottom: 12px;
 }
 .post__btn{
   background: red;
